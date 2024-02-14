@@ -2,6 +2,8 @@ package com.java.backend.dto;
 
 import java.util.Date;
 
+import com.java.backend.model.User;
+
 public class UserDto {
 
 	private String nome;
@@ -61,4 +63,18 @@ public class UserDto {
 	public Date getDataCadastro() {
 		return this.dataCadastro;
 	}
+	
+	public static UserDto convert(User user) {
+		UserDto userDto = new UserDto();
+		userDto.setNome(user.getNome());
+		userDto.setCpf(user.getCpf());
+		userDto.setEndereco(user.getEndereco());
+		userDto.setEmail(user.getEmail());
+		userDto.setTelefone(user.getTelefone());
+		userDto.setDataCadastro(user.getDataCadastro());
+		return userDto;
+	}
+	
+	
+	
 }

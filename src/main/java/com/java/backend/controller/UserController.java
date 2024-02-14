@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.java.backend.dto.UserDto;
+import com.java.backend.service.UserService;
 
 import jakarta.annotation.PostConstruct;
 
@@ -20,6 +23,9 @@ public class UserController {
 	
 	public static List<UserDto> usuarios = new ArrayList<UserDto>();
 	
+	@Autowired
+	public UserService userService = new UserService();
+	
 	@GetMapping("/")
 	public String getMensagem() {
 		return "Spring boot is working!";
@@ -27,35 +33,36 @@ public class UserController {
 	
 	@GetMapping("/users")
 	public List<UserDto> getUsers(){
+		List<UserDto> usuarios = userService.getAll();
 		return usuarios;
 	}
 	
-	@GetMapping("users/{cpf}")
-	public UserDto getUsersFiltro(@PathVariable String cpf) {
-		for(UserDto userFilter: usuarios) {
-			if(userFilter.getCpf().equals(cpf)) {
-				return userFilter;
-			}
-		}
-		return null;
+	@GetMapping("/user/{id}")
+	public UserDto findById(@PathVariable Long id) {
+		return userService.findById(id);
 	}
 	
-	@PostMapping("/newUser")
-	public UserDto inserir(@RequestBody UserDto userDto) {
-		userDto.setDataCadastro(new Date());
-		usuarios.add(userDto);
-		return userDto;
+	
+	
+	@PostMapping("/user")
+	public UserDto newUser(@RequestBody UserDto userDto) {
+		return userService.save(userDto);
 	}
 	
-	@DeleteMapping("/user/{cpf}")
-	public boolean remover(@PathVariable String cpf) {
-		for(UserDto user: usuarios) {
-			if(user.getCpf().equals(cpf)) {
-				usuarios.remove(user);
-				return true;
-			}
-		}
-		return false;
+	@GetMapping("user/cpf/{cpf}")
+	public UserDto findByCpf(@PathVariable String cpf) {
+		return userService.findByCpf(cpf);
+	}
+	
+	@DeleteMapping("/user/{id}")
+	public UserDto remover(@PathVariable Long id) {
+		return userService.delete(id);
+	}
+	
+	// @RequestParam é usado quando queremos passar na URL para a rota.
+	@GetMapping("/user/search")
+	public List<UserDto> queryByName(@RequestParam(name="nome", required=true) String nome){
+		return userService.queryByName(nome);
 	}
 	
 	
